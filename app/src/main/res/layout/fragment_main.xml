@@ -15,11 +15,31 @@
     android:layout_width="20dp"
     android:layout_height="20dp" />
     <TextView
-        android:textSize="24sp"
+        android:freezesText="true"
+        android:textSize="16sp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/action_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_below="@+id/action_status"
+        android:id="@+id/refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/orderList"
 
+        android:layout_centerHorizontal="true" >
+        </ListView>
+        <TextView
+            android:id="@+id/empty"
+            android:text="Pull down to get data"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            />
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

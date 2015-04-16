@@ -2,8 +2,6 @@
 <resources>
 
     <string name="app_name">Test for prom.ua</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
     <string name="splash_text">Test for prom.ua</string>
 
 </resources>

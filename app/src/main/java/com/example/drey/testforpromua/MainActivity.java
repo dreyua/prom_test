@@ -1,20 +1,40 @@
 package com.example.drey.testforpromua;
 
+
+
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
+import com.example.drey.testforpromua.dataobjects.Order;
 
-public class MainActivity extends Activity {
+import java.util.List;
+
+public class MainActivity extends Activity implements OrdersHolder {
 
     private boolean _showSplash = true;
     private String SHOW_TAG = "showSplash";
+    private String DATA_FRAG = "dataFragment";
+    private RetainedFragment _rf;
+
+    public List<Order> getOrders() {
+        return _rf.getOrders();
+    }
+
+    public void setOrders(List<Order> orders) {
+        _rf.setOrders(orders);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        _rf = (RetainedFragment) getFragmentManager().findFragmentByTag(DATA_FRAG);
+        if (_rf == null) {
+            _rf = new RetainedFragment();
+            getFragmentManager().beginTransaction().add(_rf, DATA_FRAG).commit();
+        }
     }
 
 
@@ -25,20 +45,7 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     protected void onResume() {
@@ -49,6 +56,7 @@ public class MainActivity extends Activity {
             tr.setCustomAnimations(R.animator.rotation, R.animator.rotation);
             tr.add(R.id.main_container, new SplashFragment()).commit();
         }
+
     }
 
     @Override
