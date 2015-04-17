@@ -39,7 +39,7 @@ public class OrdersPagerFragment extends Fragment {
         if (getActivity() instanceof  OrdersHolder) {
             _adapter.setData((OrdersHolder) getActivity());
             Bundle args = getArguments();
-            _pager.setCurrentItem(args.getInt("pos", 0));
+            _pager.setCurrentItem(args.getInt(MainFragment.TAG_POS, 0));
         }
         return v;
     }

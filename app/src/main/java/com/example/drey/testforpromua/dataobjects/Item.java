@@ -11,32 +11,34 @@ import org.simpleframework.xml.Element;
  */
 @DatabaseTable(tableName = "items")
 public class Item {
+    public static final String ITEM_NAME="name";
+    public static final String ITEM_SKU="sku";
     @DatabaseField(generatedId = true)
     Long _id;
     @DatabaseField(columnName = "item_id")
     @Attribute
     Long id;
+    @DatabaseField(columnName = ITEM_NAME)
+    @Element
+    public String name;
     @DatabaseField()
     @Element
-    String name;
+    public Float quantity;
     @DatabaseField()
     @Element
-    Float quantity;
-    @DatabaseField()
-    @Element
-    String currency;
+    public String currency;
     @DatabaseField()
     @Element(required = false)
-    String image;
+    public String image;
     @DatabaseField()
     @Element
-    String url;
+    public String url;
     @DatabaseField()
     @Element
-    Float price;
-    @DatabaseField()
+    public Float price;
+    @DatabaseField(columnName = ITEM_SKU)
     @Element(required = false)
-    String sku;
+    public String sku;
     @DatabaseField(canBeNull = false, foreign = true)
     Order order;
 }

@@ -17,26 +17,31 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.example.drey.testforpromua.dataobjects.Feed;
 import com.example.drey.testforpromua.adapters.OrderListAdapter;
+import com.example.drey.testforpromua.dataobjects.Item;
 import com.example.drey.testforpromua.dataobjects.Order;
 import com.example.drey.testforpromua.orm.HelperFactory;
 import com.example.drey.testforpromua.orm.OrderDAO;
 import com.example.drey.testforpromua.util.*;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
  * Created by drey on 14.04.15.
  */
 public class MainFragment extends Fragment {
+    public static String TAG_POS = "pos";
     private final String FEED_URL="https://my.prom.ua/cabinet/export_orders/xml/306906?hash_tag=e1177d00a4ec9b6388c57ce8e85df009";
     ConnectionListener _cl = new ConnectionListener();
     CheckBox _networkStatus;
@@ -45,7 +50,7 @@ public class MainFragment extends Fragment {
     OrderListAdapter _adapter;
     SwipeRefreshLayout _refresh;
     DownloadTask _dTask;
-    List<Order> _ordersList;
+    SearchView _search;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +64,7 @@ public class MainFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
         _orders = (ListView) v.findViewById(R.id.orderList);
         _orders.setAdapter(_adapter);
-        _adapter.setData((OrdersHolder)getActivity());
+        _adapter.setData((OrdersHolder) getActivity());
         _orders.setEmptyView(v.findViewById(R.id.empty));
         _orders.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -67,7 +72,7 @@ public class MainFragment extends Fragment {
                 FragmentTransaction tr = getFragmentManager().beginTransaction();
                 Fragment f = new OrdersPagerFragment();
                 Bundle b = new Bundle();
-                b.putInt("pos", position);
+                b.putInt(TAG_POS, position);
                 f.setArguments(b);
                 tr.replace(R.id.main_container, f).addToBackStack("pager").commit();
             }
@@ -83,6 +88,19 @@ public class MainFragment extends Fragment {
                     _dTask.cancel(true);
                 _dTask = new DownloadTask();
                 _dTask.execute(FEED_URL);
+            }
+        });
+        _search = (SearchView) v.findViewById(R.id.searchView);
+        _search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                loadOrdersFromDB(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
             }
         });
         return v;
@@ -147,14 +165,32 @@ public class MainFragment extends Fragment {
         protected void onPostExecute(Feed feed) {
             _actionStatus.append("Update complete\n");
             _refresh.setRefreshing(false);
-                OrdersHolder oh = (OrdersHolder) getActivity();
-                oh.setOrders(HelperFactory.getHelper().getOrderDAO().getAllOrders());
-                _adapter.setData(oh);
-                _ordersList = oh.getOrders();
-
+            loadOrdersFromDB(null);
         }
     }
 
+    private void loadOrdersFromDB(String search){
+        OrdersHolder oh = (OrdersHolder) getActivity();
+        if (search == null || search == "") {
+            oh.setOrders(HelperFactory.getHelper().getOrderDAO().getAllOrders());
+            _adapter.setData(oh);
+        } else {
+            QueryBuilder<Order, Long> qb = HelperFactory.getHelper().getOrderDAO().queryBuilder();
+            QueryBuilder<Item, Long> items = HelperFactory.getHelper().getItemDAO().queryBuilder();
+            try {
+                items.where().like(Item.ITEM_NAME, "%" + search + "%")
+                        .or().like(Item.ITEM_SKU, "%" + search + "%");
+                qb.where().like(Order.ORDER_NAME, "%" + search + "%")
+                        .or().raw("cast('orders'.'"+Order.ORDER_ID+"' as text) like '%"+search+"%'")
+                        .or().like(Order.ORDER_PHONE, "%"+search+"%");
+                oh.setOrders(qb.joinOr(items).query());
+                _adapter.setData(oh);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 }
 
 

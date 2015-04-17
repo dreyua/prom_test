@@ -18,6 +18,8 @@ import java.util.Objects;
 /**
  * Created by drey on 15.04.15.
  */
+
+
 public class OrderListAdapter extends ArrayAdapter<Order> {
     int layout;
     public OrderListAdapter(Context context, int resource) {

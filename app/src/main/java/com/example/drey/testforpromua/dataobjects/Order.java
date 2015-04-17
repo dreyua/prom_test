@@ -16,20 +16,24 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @DatabaseTable(tableName = "orders")
 public class Order {
-    @DatabaseField(columnName = "_ID", generatedId = true, allowGeneratedIdInsert = true)
+    public static final String ORDER_NAME = "name";
+    public static final  String ORDER_ID = "_ID";
+    public static final  String ORDER_PHONE = "phone";
+    @DatabaseField(columnName = ORDER_ID, generatedId = true, allowGeneratedIdInsert = true)
     @Attribute
     public Long id;
     @DatabaseField()
     @Attribute
     String state;
-    @DatabaseField()
+    @DatabaseField(columnName = ORDER_NAME)
     @Element
     public String name;
-    @DatabaseField()
+    @DatabaseField(columnName = ORDER_PHONE)
     @Element
     public String phone;
     @DatabaseField()
@@ -65,6 +69,10 @@ public class Order {
             res += (i.name.length()<=limit?i.name:i.name.substring(0,limit));
         }
         return res;
+    }
+
+    public List<Item> getItems(){
+        return new ArrayList<Item>(itemsCollection);
     }
 
     public Order(){}

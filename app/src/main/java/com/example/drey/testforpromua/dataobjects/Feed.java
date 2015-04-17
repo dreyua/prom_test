@@ -32,21 +32,24 @@ public class Feed {
         if (getOrderCount() > 0) {
             OrderDAO orders = HelperFactory.getHelper().getOrderDAO();
             ItemDAO items = HelperFactory.getHelper().getItemDAO();
-            if (orders != null && items != null)
-                for (Order o : this.orders) {
-                    try {
+            if (orders != null && items != null) {
+                try {
+                    items.deleteBuilder().delete();
+                    orders.deleteBuilder().delete();
+                    for (Order o : this.orders) {
                         orders.createOrUpdate(o);
                         DeleteBuilder d = items.deleteBuilder();
                         d.where().eq("order_id", o.id);
                         d.delete();
-                        for(Item i:o.items){
+                        for (Item i : o.items) {
                             i.order = o;
                             items.createOrUpdate(i);
                         }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+            }
         }
     }
 

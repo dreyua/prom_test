@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 
+import com.example.drey.testforpromua.MainFragment;
 import com.example.drey.testforpromua.OrderFragment;
 import com.example.drey.testforpromua.OrdersHolder;
 import com.example.drey.testforpromua.dataobjects.Order;
@@ -37,7 +38,7 @@ public class OrderPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Fragment f = new OrderFragment();
         Bundle args = new Bundle();
-        args.putInt("pos", position);
+        args.putInt(MainFragment.TAG_POS, position);
         f.setArguments(args);
         return f;
     }

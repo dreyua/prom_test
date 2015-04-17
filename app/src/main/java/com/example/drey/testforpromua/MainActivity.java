@@ -7,6 +7,9 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import com.example.drey.testforpromua.dataobjects.Order;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.List;
 
@@ -28,6 +31,16 @@ public class MainActivity extends Activity implements OrdersHolder {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                //.cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                .defaultDisplayImageOptions(defaultOptions)
+                .build();
+        ImageLoader.getInstance().init(config);
+
         setContentView(R.layout.activity_main);
 
         _rf = (RetainedFragment) getFragmentManager().findFragmentByTag(DATA_FRAG);
